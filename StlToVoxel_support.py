@@ -7,18 +7,7 @@
 
 
 import sys
-
-try:
-    from Tkinter import *
-except ImportError:
-    from tkinter import *
-
-try:
-    import ttk
-    py3 = False
-except ImportError:
-    import tkinter.ttk as ttk
-    py3 = True
+from tkinter import *
 
 def init(top, gui, *args, **kwargs):
     global w, top_level, root
