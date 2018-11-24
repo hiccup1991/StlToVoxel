@@ -26,6 +26,7 @@ def doExport(inputFilePath, outputFilePath, resolution):
         prepixel = np.zeros((bounding_box[0], bounding_box[1]), dtype=bool)
         perimeter.linesToVoxels(lines, prepixel)
         vol[height] = prepixel
+    result = vol
     vol, bounding_box = padVoxelArray(vol)
     outputFilePattern, outputFileExtension = os.path.splitext(outputFilePath)
     if outputFileExtension == '.png':
@@ -34,6 +35,7 @@ def doExport(inputFilePath, outputFilePath, resolution):
         exportXyz(vol, bounding_box, outputFilePath)
     elif outputFileExtension == '.svx':
         exportSvx(vol, bounding_box, outputFilePath, scale, shift)
+    return result
 
 def exportPngs(voxels, bounding_box, outputFilePath):
     size = str(len(str(bounding_box[2]))+1)
