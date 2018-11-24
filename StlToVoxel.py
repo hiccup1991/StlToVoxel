@@ -50,7 +50,7 @@ class MainWindow:
         top.configure(highlightcolor="black")
 
         self.cvsVoxelPlayer = Canvas(top)
-        self.cvsVoxelPlayer.place(relx=0.23, rely=0.02, relheight=0.96, relwidth=0.75)
+        self.cvsVoxelPlayer.place(relx=0.26, rely=0.02, relheight=0.96, relwidth=0.72)
         self.cvsVoxelPlayer.configure(background="#d9d9d9")
         self.cvsVoxelPlayer.configure(borderwidth="2")
         self.cvsVoxelPlayer.configure(highlightbackground="#d9d9d9")
@@ -59,12 +59,12 @@ class MainWindow:
         self.cvsVoxelPlayer.configure(relief=RIDGE)
         self.cvsVoxelPlayer.configure(selectbackground="#c4c4c4")
         self.cvsVoxelPlayer.configure(selectforeground="black")
-        self.cvsVoxelPlayer.pack(expand=YES, fill=BOTH)
-        png = tkinter.PhotoImage(file='/home/dev/Pictures/wallpaper.png')
-        self.cvsVoxelPlayer.create_image(100, 100, image=png)
+        # self.cvsVoxelPlayer.pack(expand=YES, fill=BOTH)
+        # png = tkinter.PhotoImage(file='/home/dev/Pictures/wallpaper.png')
+        # self.cvsVoxelPlayer.create_image(100, 100, image=png)
 
         self.btnOpen = Button(top)
-        self.btnOpen.place(relx=0.01, rely=0.22, height=64, width=207)
+        self.btnOpen.place(relx=0.02, rely=0.1, height=64, width=207)
         self.btnOpen.configure(activebackground="#d9d9d9")
         self.btnOpen.configure(activeforeground="#000000")
         self.btnOpen.configure(background="#d9d9d9")
@@ -76,8 +76,29 @@ class MainWindow:
         self.btnOpen.configure(text='''Open''')
         self.btnOpen.bind("<Button-1>", self.open_file_dialog)
 
+        self.Label1 = Label(top)
+        self.Label1.place(relx=0.02, rely=0.26, height=40, width=184)
+        self.Label1.configure(activebackground="#f9f9f9")
+        self.Label1.configure(activeforeground="black")
+        self.Label1.configure(background="#d9d9d9")
+        self.Label1.configure(disabledforeground="#a3a3a3")
+        self.Label1.configure(foreground="#000000")
+        self.Label1.configure(highlightbackground="#d9d9d9")
+        self.Label1.configure(highlightcolor="black")
+        self.Label1.configure(text='''Resolution''')
+
+        self.entResolution = Entry(top)
+        self.entResolution.place(relx=0.02, rely=0.34, height=64, width=207)
+        self.entResolution.configure(background="white")
+        self.entResolution.configure(disabledforeground="#a3a3a3")
+        self.entResolution.configure(font="TkFixedFont")
+        self.entResolution.configure(foreground="#000000")
+        self.entResolution.configure(insertbackground="black")
+        self.entResolution.insert(0, "100")
+        self.entResolution.configure(width=304)
+
         self.btnStlToVoxel = Button(top)
-        self.btnStlToVoxel.place(relx=0.01, rely=0.38, height=64, width=207)
+        self.btnStlToVoxel.place(relx=0.02, rely=0.50, height=64, width=207)
         self.btnStlToVoxel.configure(activebackground="#d9d9d9")
         self.btnStlToVoxel.configure(activeforeground="#000000")
         self.btnStlToVoxel.configure(background="#d9d9d9")
@@ -89,18 +110,8 @@ class MainWindow:
         self.btnStlToVoxel.configure(text='''StlToVoxel''')
         self.btnStlToVoxel.bind("<Button-1>", self.stl_to_voxel)
 
-        self.entResolution = Entry(top)
-        self.entResolution.place(relx=0.01, rely=0.54, height=64, width=207)
-        self.entResolution.configure(background="white")
-        self.entResolution.configure(disabledforeground="#a3a3a3")
-        self.entResolution.configure(font="TkFixedFont")
-        self.entResolution.configure(foreground="#000000")
-        self.entResolution.configure(insertbackground="black")
-        self.entResolution.insert(0, "100")
-        self.entResolution.configure(width=304)
-
         self.btnModelColor = Button(top)
-        self.btnModelColor.place(relx=0.01, rely=0.69, height=64, width=207)
+        self.btnModelColor.place(relx=0.02, rely=0.66, height=64, width=207)
         self.btnModelColor.configure(activebackground="#d9d9d9")
         self.btnModelColor.configure(activeforeground="#000000")
         self.btnModelColor.configure(background="#d9d9d9")
@@ -112,7 +123,7 @@ class MainWindow:
         self.btnModelColor.configure(text='''Color''')
 
         self.btnModelColor = Button(top)
-        self.btnModelColor.place(relx=0.01, rely=0.84, height=64, width=207)
+        self.btnModelColor.place(relx=0.02, rely=0.82, height=64, width=207)
         self.btnModelColor.configure(activebackground="#d9d9d9")
         self.btnModelColor.configure(activeforeground="#000000")
         self.btnModelColor.configure(background="#d9d9d9")
@@ -122,17 +133,6 @@ class MainWindow:
         self.btnModelColor.configure(highlightcolor="black")
         self.btnModelColor.configure(pady="0")
         self.btnModelColor.configure(text='''Xml''')
-
-        self.Label1 = Label(top)
-        self.Label1.place(relx=0.02, rely=0.03, height=91, width=184)
-        self.Label1.configure(activebackground="#f9f9f9")
-        self.Label1.configure(activeforeground="black")
-        self.Label1.configure(background="#d9d9d9")
-        self.Label1.configure(disabledforeground="#a3a3a3")
-        self.Label1.configure(foreground="#000000")
-        self.Label1.configure(highlightbackground="#d9d9d9")
-        self.Label1.configure(highlightcolor="black")
-        self.Label1.configure(text='''Label''')
 
     def open_file_dialog(self, event):
         filename = filedialog.askopenfilename(initialdir = "./",title = "Select file",filetypes = (("stl files","*.stl"),))
@@ -152,10 +152,13 @@ class MainWindow:
                 print("Directory " , newdirectoryname ,  " already exists")
             self.outputname = newdirectoryname + "/" + only_name + ".png"
             print(self.outputname)
+
     def stl_to_voxel(self, event):
-        convert.doExport(self.inputname, self.outputname, int(self.entResolution.get()))
+        # convert.doExport(self.inputname, self.outputname, int(self.entResolution.get()))
         self.cvsVoxelPlayer.pack(expand=YES, fill=BOTH)
-        png = PhotoImage(file='./examples/KJ1/KJ1011.png')
+        filepath = './examples/KJ1/KJ1011.png'
+        print(os.path.abspath(filepath))
+        png = PhotoImage(file=filepath)
         self.cvsVoxelPlayer.create_image(0, 0, image=png)
 
 if __name__ == '__main__':
