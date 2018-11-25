@@ -49,10 +49,30 @@ def destroy_MainWindow():
     w.destroy()
     w = None
 
+class Position(object):
+    x = int
+    y = int
+    z = int
+
+class Voxel(object):
+    position = Position
+    color = str
+
+class Dimensions(object):
+    width = int
+    height = int
+    depth = int
+
+class Content(object):
+    dimensions = Dimensions
+    voxel = [Voxel]
+
 
 class MainWindow:
     inputdirname = '/home/dev/Documents/StlToVoxel/examples'
     partcolor = ['red', 'green', 'blue', 'yellow', 'navy', 'gold', 'purple', 'cyan', 'orange', 'azure', 'ivory', 'snow', 'linen', 'cornsilk', 'tomato', 'coral']
+    content = Content()
+    content.voxel = list()
     def __init__(self, top=None):
         '''This class configures and populates the toplevel window.
            top is the toplevel containing window.'''
@@ -86,11 +106,11 @@ class MainWindow:
         self.btnOpen.bind("<Button-1>", self.open_directory_dialog)
 
         self.lblResolution = Label(top)
-        self.lblResolution.place(relx=0.02, rely=0.22, height=34, width=184)
-        self.lblResolution.configure(text='''Resolution''')
+        self.lblResolution.place(relx=0.02, rely=0.3, height=34, width=77)
+        self.lblResolution.configure(text='''Resolution : ''')
 
         self.entResolution = Entry(top)
-        self.entResolution.place(relx=0.02, rely=0.3, height=34, width=207)
+        self.entResolution.place(relx=0.10, rely=0.3, height=34, width=130)
         self.entResolution.insert(0, "50")
         self.entResolution.configure(width=304)
 
@@ -99,13 +119,21 @@ class MainWindow:
         self.btnStlToVoxel.configure(text='''StlToVoxel''')
         self.btnStlToVoxel.bind("<Button-1>", self.stl_to_voxel_files)
 
+        self.lblPart = Label(top)
+        self.lblPart.place(relx=0.02, rely=0.6, height=34, width=77)
+        self.lblPart.configure(text='''Part : ''')
+
         self.cboPartList = ttk.Combobox(top)
         self.cboPartList['values'] = ('KJ1.stl', 'KJ2.stl', 'KJ3.stl', 'KJ4.stl', 'KJ5.stl')
         self.cboPartList.current(0)
-        self.cboPartList.place(relx=0.02, rely=0.6, height=34, width=207)
+        self.cboPartList.place(relx=0.10, rely=0.6, height=34, width=130)
+
+        self.lblPartColor = Label(top)
+        self.lblPartColor.place(relx=0.02, rely=0.72, height=34, width=77)
+        self.lblPartColor.configure(text='''Part Color : ''')
 
         self.cboPartColor = ttk.Combobox(top)
-        self.cboPartColor.place(relx=0.02, rely=0.72, height=34, width=207)
+        self.cboPartColor.place(relx=0.10, rely=0.72, height=34, width=130)
         self.cboPartColor['values'] = ('red', 'green', 'blue', 'yellow', 'navy', 'gold', 'purple', 'cyan', 'orange', 'azure', 'ivory', 'snow', 'linen', 'cornsilk', 'tomato', 'coral')
         self.cboPartColor.configure(text='''Color''')
         self.cboPartColor.bind('<<ComboboxSelected>>', self.on_part_color)
@@ -175,9 +203,13 @@ class MainWindow:
 
         g = np.zeros(shape=(h,w))
         k = np.zeros(shape=(count,h,w))
-        colors = np.array([[['#ffffffff']*w]*h]*count)
-        k1=np.zeros(shape=(w))
-        k2=np.zeros(shape=(h,w))
+        dimesions = Dimensions()
+        dimesions.width = w
+        dimesions.height = h
+        dimesions.depth = count
+        self.content.dimensions = dimesions
+
+        colors = np.array([[['#00000000']*w]*h]*count)
         for j in range(0,count):
 
             images = []
@@ -186,41 +218,48 @@ class MainWindow:
                 image = cv2.imread(filepaths[i][j])
                 images.append(image)
                 m.append(cv2.cvtColor(image, cv2.COLOR_BGR2GRAY))
-            #k2=[]
             for py in range(0,h):
                 for px in range(0,w):
                     k[j][py][px]=int(0)
-                    if ((m[0][py][px]==255) and (m[1][py][px]==255)):
-                        #x=1,y=1
-                        g[py][px]=g[py][px]+2
-                        colors[j][py][px]='white'
-                        k[j][py][px]=int(0)
-                        counter=counter+1
-                    else:
-                        for t in range(0,len(m)):
-                            if (m[t][py][px]==255):
-                                g[py][px]=g[py][px]+2
-                                colors[j][py][px]=self.partcolor[t]
+                    for t in range(0,len(m)):
+                        if (m[t][py][px] == 255):
+                            g[py][px]=g[py][px] + 2
+                            if(colors[j][py][px] == '#00000000'):
+                                colors[j][py][px] = self.partcolor[t]
                                 k[j][py][px]=int(2)
-                                counter=counter+1
-                                break
-                print(k[j])
-        print("Total no.of Voxels:")
-        print(count*h*w)
-        filled = np.array(k)
+                            else:
+                                colors[j][py][px] = 'white'
+                                k[j][py][px]=int(0)
+                            counter=counter+1
+                    if(colors[j][py][px] != '#00000000'):
+                        voxel = Voxel()
+                        voxel.color = colors[j][py][px]
+                        position = Position()
+                        position.x = px
+                        position.y = py
+                        position.z = j
+                        voxel.position = position 
+                        self.content.voxel.append(voxel)
 
+        print("Total no.of Voxels:")
+        print(counter)
+        filled = np.array(k)
         self.ax.voxels(filled,facecolors=colors, edgecolors='gray')
         self.canvas.draw()
 
     def on_part_color(self, event):
         color = self.cboPartColor.get()
         self.partcolor[self.cboPartList.current()] = color
-        print(self.cboPartList.current())
-        print(self.partcolor[self.cboPartList.current()])
         self.show_model()
 
     def on_xml(self, event):
-        print(self.vol)
+        xml_doc = pyconvert.pyconv.convert2XML(self.content)
+        # print(xml_doc.toprettyxml())
+        print('xml generating...')
+        file = open(self.inputdirname + "/" + "voxeldata.xml", 'w')
+        file.write(xml_doc.toprettyxml())
+        file.close()
+        print('xml generated')
 
 if __name__ == '__main__':
     vp_start_gui()
