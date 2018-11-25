@@ -25,6 +25,7 @@ import shutil
 
 matplotlib.use('TkAgg')
 
+
 def vp_start_gui():
     '''Starting point when module is the main routine.'''
     global val, w, root
@@ -51,6 +52,7 @@ def destroy_MainWindow():
 
 class MainWindow:
     inputdirname = '/home/dev/Documents/StlToVoxel/examples'
+    partcolor = ['red', 'green', 'blue', 'yellow', 'navy', 'gold', 'purple', 'cyan', 'orange', 'azure', 'ivory', 'snow', 'linen', 'cornsilk', 'tomato', 'coral']
     def __init__(self, top=None):
         '''This class configures and populates the toplevel window.
            top is the toplevel containing window.'''
@@ -69,6 +71,14 @@ class MainWindow:
         self.cvsVoxelPlayer.configure(background = 'white')
         self.cvsVoxelPlayer.configure(borderwidth = '4')
         self.cvsVoxelPlayer.configure(relief=RIDGE)
+
+        self.fig = Figure(figsize=(60, 60))
+        self.canvas = FigureCanvasTkAgg(self.fig, master=self.cvsVoxelPlayer)
+        self.canvas.get_tk_widget().pack()   
+        self.ax = self.fig.add_subplot(111, projection='3d')
+        self.ax.set_ylabel("Y", fontsize=14)
+        self.ax.set_xlabel("X", fontsize=14)
+        self.ax.set_zlabel("z", fontsize=14)
 
         self.btnOpen = Button(top)
         self.btnOpen.place(relx=0.02, rely=0.1, height=64, width=207)
@@ -96,7 +106,7 @@ class MainWindow:
 
         self.cboPartColor = ttk.Combobox(top)
         self.cboPartColor.place(relx=0.02, rely=0.72, height=34, width=207)
-        self.cboPartColor['values'] = ('red', 'green', 'blue', 'cyan', 'yellow', 'magenta')
+        self.cboPartColor['values'] = ('red', 'green', 'blue', 'yellow', 'navy', 'gold', 'purple', 'cyan', 'orange', 'azure', 'ivory', 'snow', 'linen', 'cornsilk', 'tomato', 'coral')
         self.cboPartColor.configure(text='''Color''')
         self.cboPartColor.bind('<<ComboboxSelected>>', self.on_part_color)
 
@@ -136,15 +146,6 @@ class MainWindow:
             print("outputfilename: " + outputfilename)
             convert.doExport(self.inputdirname + "/" + filename, outputfilename, int(self.entResolution.get()))
         self.show_model()
-
-    def make_ax(self, grid=False):
-        fig = plt.figure()
-        ax = fig.gca(projection='3d')
-        ax.set_xlabel("x")
-        ax.set_ylabel("y")
-        ax.set_zlabel("z")
-        ax.grid(grid)
-        return ax
 
     def show_model(self):
         print('show model')
@@ -188,64 +189,35 @@ class MainWindow:
             #k2=[]
             for py in range(0,h):
                 for px in range(0,w):
-                    for t in range(0,len(m)):
-                        if ((m[0][py][px]==255) and (m[1][py][px]==255)):
-                            #x=1,y=1
-                            g[py][px]=g[py][px]+2
-                            colors[j][py][px]=str('#ffffffff')
-                            k[j][py][px]=int(0)
-                            counter=counter+1
-                        elif (m[0][py][px]==255):
-                            #x=1,y=1
-                            g[py][px]=g[py][px]+2
-                            colors[j][py][px]=str('#ff0000ff')
-                            k[j][py][px]=int(2)
-                            counter=counter+1
-                        elif (m[1][py][px]==255):
-                            #x=1,y=1
-                            g[py][px]=g[py][px]+2
-                            colors[j][py][px]=str('#00ff00ff')
-                            k[j][py][px]=int(2)
-                            counter=counter+1
-                        elif (m[2][py][px]==255):
-                            #x=1,y=1
-                            g[py][px]=g[py][px]+2
-                            colors[j][py][px]=str('#0000ffff')
-                            k[j][py][px]=int(2)
-                            counter=counter+1
-                        elif (m[3][py][px]==255):
-                            #x=1,y=1
-                            g[py][px]=g[py][px]+2
-                            colors[j][py][px]=str('#ffff00ff')
-                            k[j][py][px]=int(2)
-                            counter=counter+1
-                        elif (m[4][py][px]==255):
-                            #x=1,y=1
-                            g[py][px]=g[py][px]+2
-                            colors[j][py][px]=str('#ff00ffff')
-                            k[j][py][px]=int(2)
-                            counter=counter+1
-                        else:
-                            k[j][py][px]=int(0)		
+                    k[j][py][px]=int(0)
+                    if ((m[0][py][px]==255) and (m[1][py][px]==255)):
+                        #x=1,y=1
+                        g[py][px]=g[py][px]+2
+                        colors[j][py][px]='white'
+                        k[j][py][px]=int(0)
+                        counter=counter+1
+                    else:
+                        for t in range(0,len(m)):
+                            if (m[t][py][px]==255):
+                                g[py][px]=g[py][px]+2
+                                colors[j][py][px]=self.partcolor[t]
+                                k[j][py][px]=int(2)
+                                counter=counter+1
+                                break
                 print(k[j])
         print("Total no.of Voxels:")
         print(count*h*w)
         filled = np.array(k)
 
-        fig = Figure(figsize=(60, 60))
-        canvas = FigureCanvasTkAgg(fig, master=self.cvsVoxelPlayer)
-        canvas.get_tk_widget().pack()   
-        ax = fig.add_subplot(111, projection='3d')
-        ax.set_title ("Estimation Grid", fontsize=16)
-        ax.set_ylabel("Y", fontsize=14)
-        ax.set_xlabel("X", fontsize=14)
-        ax.set_zlabel("z", fontsize=14)
-        ax.voxels(filled,facecolors=colors, edgecolors='gray')
-
-        canvas.draw()
+        self.ax.voxels(filled,facecolors=colors, edgecolors='gray')
+        self.canvas.draw()
 
     def on_part_color(self, event):
-        print(self.cboPartColor.get())
+        color = self.cboPartColor.get()
+        self.partcolor[self.cboPartList.current()] = color
+        print(self.cboPartList.current())
+        print(self.partcolor[self.cboPartList.current()])
+        self.show_model()
 
     def on_xml(self, event):
         print(self.vol)
