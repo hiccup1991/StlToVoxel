@@ -1,0 +1,1 @@
+ python3 stltovoxel.py "/home/routray/Desktop/test/model/Sphere1.stl" "/home/routray/Desktop/test/slice_output/output.png" "20"
