@@ -72,7 +72,7 @@ class MainWindow:
     inputdirname = '/home/dev/Documents/StlToVoxel/examples'
     partcolor = ['red', 'green', 'blue', 'yellow', 'navy', 'gold', 'purple', 'cyan', 'orange', 'azure', 'ivory', 'snow', 'linen', 'cornsilk', 'tomato', 'coral']
     content = Content()
-    backgroundColor = '#5ed845'
+    backgroundColor = 'light blue'
     disabledforeground = '#a3a3a3'
     highlightbackground = '#5eff45'
 
@@ -86,7 +86,7 @@ class MainWindow:
         _ana2color = '#d9d9d9' # X11 color: 'gray85' 
 
         top.geometry("937x579+650+150")
-        top.title("A Cube Box")
+        top.title("A CUBE VOXEL")
         top.configure(background=self.backgroundColor)
 
         self.lblLogo = Label(top)
@@ -99,20 +99,20 @@ class MainWindow:
         self.frmInputStl = LabelFrame(top)
         self.frmInputStl.place(relx=0.02, rely=0.2, relheight=0.1 , relwidth=0.25)
         self.frmInputStl.configure(relief=RIDGE)
-        self.frmInputStl.configure(text='''Input STL File''')
+        self.frmInputStl.configure(text='''INPUT STL FILE''', font='bold')
         self.frmInputStl.configure(background=self.backgroundColor)
         
         self.btnOpen = Button(self.frmInputStl)
         self.btnOpen.place(relx=0.05, rely=0.05, relheight=0.9, relwidth=0.9)
-        self.btnOpen.configure(text='''Open''')
+        self.btnOpen.configure(text='''OPEN''', font='bold')
         self.btnOpen.bind("<Button-1>", self.open_directory_dialog)
         self.btnOpen.configure(background=self.backgroundColor)
         self.btnOpen.configure(disabledforeground=self.disabledforeground)
 
         self.frmLayerThickness = LabelFrame(top)
-        self.frmLayerThickness.place(relx=0.02, rely=0.35, relheight=0.1 , relwidth=0.25)
+        self.frmLayerThickness.place(relx=0.02, rely=0.32, relheight=0.1 , relwidth=0.25)
         self.frmLayerThickness.configure(relief=RIDGE)
-        self.frmLayerThickness.configure(text='''Layer Thickness''')
+        self.frmLayerThickness.configure(text='''SPECIFY LAYER THICKNESS (in inch)''', font='bold')
         self.frmLayerThickness.configure(background=self.backgroundColor)
 
         self.entLayerThickness = Entry(self.frmLayerThickness)
@@ -121,49 +121,55 @@ class MainWindow:
         self.entLayerThickness.configure(background=self.backgroundColor)
         self.entLayerThickness.configure(justify=RIGHT)
 
-        self.frmModify = LabelFrame(top)
-        self.frmModify.place(relx=0.02, rely=0.5, relheight=0.2 , relwidth=0.25)
-        self.frmModify.configure(relief=RIDGE)
-        self.frmModify.configure(text='''Modify Changes''')
-        self.frmModify.configure(background=self.backgroundColor)
+        self.frmConvert = LabelFrame(top)
+        self.frmConvert.place(relx=0.02, rely=0.44, relheight=0.1 , relwidth=0.25)
+        self.frmConvert.configure(relief=RIDGE)
+        self.frmConvert.configure(background=self.backgroundColor)
 
-        self.btnStlToVoxel = Button(self.frmModify)
-        self.btnStlToVoxel.place(relx=0.05, rely=0.05, relheight=0.35, relwidth=0.9)
-        self.btnStlToVoxel.configure(text='''Convert''')
+        self.btnStlToVoxel = Button(self.frmConvert)
+        self.btnStlToVoxel.place(relx=0.05, rely=0.05, relheight=0.9, relwidth=0.9)
+        self.btnStlToVoxel.configure(text='''CONVERT TO VOXELS''', font='bold')
         self.btnStlToVoxel.bind("<Button-1>", self.stl_to_voxel_files)
         self.btnStlToVoxel.configure(background=self.backgroundColor)
         self.btnStlToVoxel.configure(disabledforeground=self.disabledforeground)
 
+        self.frmModify = LabelFrame(top)
+        self.frmModify.place(relx=0.02, rely=0.56, relheight=0.15 , relwidth=0.25)
+        self.frmModify.configure(relief=RIDGE)
+        self.frmModify.configure(text='''MODIFY CHANGES''', font='bold')
+        self.frmModify.configure(background=self.backgroundColor)
+
         self.lblPart = Label(self.frmModify)
-        self.lblPart.place(relx=0.05, rely=0.45, relheight=0.2, relwidth=0.45)
-        self.lblPart.configure(text='''Part : ''')
+        self.lblPart.place(relx=0.05, rely=0.05, relheight=0.3, relwidth=0.45)
+        self.lblPart.configure(text='''PART : ''', font='bold')
         self.lblPart.configure(background=self.backgroundColor)
 
         self.cboPartList = ttk.Combobox(self.frmModify)
         # self.cboPartList['values'] = ('KJ1.stl', 'KJ2.stl', 'KJ3.stl', 'KJ4.stl', 'KJ5.stl')
         # self.cboPartList.current(0)
-        self.cboPartList.place(relx=0.5, rely=0.45, relheight=0.2, relwidth=0.45)
+        self.cboPartList.place(relx=0.5, rely=0.05, relheight=0.3, relwidth=0.45)
         self.cboPartList.configure(background=self.backgroundColor)
 
         self.lblPartColor = Label(self.frmModify)
-        self.lblPartColor.place(relx=0.05, rely=0.7, relheight=0.2, relwidth=0.45)
-        self.lblPartColor.configure(text='''Part Color : ''')
+        self.lblPartColor.place(relx=0.05, rely=0.5, relheight=0.3, relwidth=0.45)
+        self.lblPartColor.configure(text=''' PART COLOR : ''' , font='bold')
         self.lblPartColor.configure(background=self.backgroundColor)
 
         self.cboPartColor = ttk.Combobox(self.frmModify)
-        self.cboPartColor.place(relx=0.5, rely=0.7, relheight=0.2, relwidth=0.45)
-        self.cboPartColor['values'] = ('red', 'green', 'blue', 'yellow', 'navy', 'gold', 'purple', 'cyan', 'orange', 'azure', 'ivory', 'snow', 'linen', 'cornsilk', 'tomato', 'coral')
+        self.cboPartColor.place(relx=0.5, rely=0.5, relheight=0.3, relwidth=0.45)
+        self.cboPartColor['values'] = ('RED', 'GREEN', 'BLUE', 'YELLOW', 'NAVY', 'GOLD', 'PURPLE', 'CYAN', 'ORANGE', 'AZURE', 'IVORY', 'SNOW', 'LINEN', 'CORNSILK', 'TOMATO', 'CORAL')
         self.cboPartColor.bind('<<ComboboxSelected>>', self.on_part_color)
 
         self.frmMaterial = LabelFrame(top)
-        self.frmMaterial.place(relx=0.02, rely=0.75, relheight=0.08 , relwidth=0.25)
+        self.frmMaterial.place(relx=0.02, rely=0.74, relheight=0.08 , relwidth=0.25)
         self.frmMaterial.configure(relief=RIDGE)
-        self.frmMaterial.configure(text='''Specify Material''')
+        self.frmMaterial.configure(text='''SPECIFY MATERIAL''', font='bold')
         self.frmMaterial.configure(background=self.backgroundColor)
 
         self.cboMaterial = ttk.Combobox(self.frmMaterial)
         self.cboMaterial.place(relx=0.05, rely=0.05, relheight=0.75, relwidth=0.9)
-        self.cboMaterial['values'] = ('red', 'green')
+        self.cboMaterial['values'] = ('PLA', 'ABS')
+        self.cboMaterial.current(0)
 
         self.frmSaveCancel = LabelFrame(top)
         self.frmSaveCancel.place(relx=0.02, rely=0.88, relheight=0.08 , relwidth=0.25)
@@ -172,14 +178,14 @@ class MainWindow:
         
         self.btnXml = Button(self.frmSaveCancel)
         self.btnXml.place(relx=0.05, rely=0.05, relheight=0.9, relwidth=0.4)
-        self.btnXml.configure(text='''Save''')
+        self.btnXml.configure(text='''SAVE''', font='bold')
         self.btnXml.bind("<Button-1>", self.on_xml)
         self.btnXml.configure(background=self.backgroundColor)
         self.btnXml.configure(disabledforeground=self.disabledforeground)
 
         self.btnCancel = Button(self.frmSaveCancel)
         self.btnCancel.place(relx=0.55, rely=0.05, relheight=0.9, relwidth=0.4)
-        self.btnCancel.configure(text='''Cancel''')
+        self.btnCancel.configure(text='''CANCEL''', font='bold')
         self.btnCancel.bind("<Button-1>", self.on_cancel)
         self.btnCancel.configure(background=self.backgroundColor)
         self.btnCancel.configure(disabledforeground=self.disabledforeground)
@@ -299,13 +305,10 @@ class MainWindow:
         print("Colored count of Voxels: %d", counter)
         filled = np.array(k)
         self.ax.voxels(filled,facecolors=colors, edgecolors='gray')
-        layerthickness = float(self.entLayerThickness.get())
-        resolution = int(1.0/layerthickness)
-        self.ax.set_xlim(resolution)
         self.canvas.draw()
 
     def on_part_color(self, event):
-        color = self.cboPartColor.get()
+        color = self.cboPartColor.get().lower()
         self.partcolor[self.cboPartList.current()] = color
         self.show_model()
 
