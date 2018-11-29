@@ -301,7 +301,7 @@ class MainWindow:
         self.ax.voxels(filled,facecolors=colors, edgecolors='gray')
         layerthickness = float(self.entLayerThickness.get())
         resolution = int(1.0/layerthickness)
-        self.ax.set_xlim(resolution)
+        self.ax.set_xlim(0, resolution)
         self.canvas.draw()
 
     def on_part_color(self, event):
