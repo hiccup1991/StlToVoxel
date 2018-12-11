@@ -17,9 +17,12 @@ from util import arrayToWhiteGreyscalePixel, padVoxelArray
 def doExport(inputFilePath, outputFilePath, resolution):
     mesh = list(stl_reader.read_stl_verticies(inputFilePath))
     (scale, shift, bounding_box) = slice.calculateScaleAndShift(mesh, resolution)
+    print(bounding_box[2])
     mesh = list(slice.scaleAndShiftMesh(mesh, scale, shift))
     #Note: vol should be addressed with vol[z][x][y]
+    print(bounding_box)
     vol = np.zeros((bounding_box[2],bounding_box[0],bounding_box[1]), dtype=bool)
+    print(bounding_box)
     for height in range(bounding_box[2]):
         print('Processing layer %d/%d'%(height+1,bounding_box[2]))
         lines = slice.toIntersectingLines(mesh, height)
@@ -27,7 +30,7 @@ def doExport(inputFilePath, outputFilePath, resolution):
         perimeter.linesToVoxels(lines, prepixel)
         vol[height] = prepixel
     result = vol
-    vol, bounding_box = padVoxelArray(vol)
+    vol, bounding_box = padVoxelArray(vol)#+2 part
     outputFilePattern, outputFileExtension = os.path.splitext(outputFilePath)
     if outputFileExtension == '.png':
         exportPngs(vol, bounding_box, outputFilePath)
@@ -41,6 +44,7 @@ def exportPngs(voxels, bounding_box, outputFilePath):
     size = str(len(str(bounding_box[2]))+1)
     outputFilePattern, outputFileExtension = os.path.splitext(outputFilePath)
     for height in range(bounding_box[2]):
+        print("height="+str(height))
         img = Image.new('L', (bounding_box[0], bounding_box[1]), 'black')  # create a new black image
         pixels = img.load()
         arrayToWhiteGreyscalePixel(voxels[height], pixels)
