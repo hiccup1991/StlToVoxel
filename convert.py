@@ -4,7 +4,7 @@ import io
 import xml.etree.cElementTree as ET
 from zipfile import ZipFile
 import zipfile
-This is hiccup change.
+
 from PIL import Image
 import numpy as np
 
