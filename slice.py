@@ -102,11 +102,13 @@ def calculateScaleAndShift(mesh, resolution):
     for i in range(3):
         mins[i] = min(allPoints, key=lambda tri: tri[i])[i]
         maxs[i] = max(allPoints, key=lambda tri: tri[i])[i]
+        print("mins[" + str(i) + "]=" + str(mins[i]) + "  maxs[" + str(i) + "]=" + str(maxs[i]))
     shift = [-min for min in mins]
     xyscale = float(resolution - 1) / (max(maxs[0] - mins[0], maxs[1] - mins[1]))
     #TODO: Change this to return one scale. If not, verify svx exporting still works.
     scale = [xyscale, xyscale, xyscale]
     bounding_box = [resolution, resolution, math.ceil((maxs[2] - mins[2]) * xyscale)]
+    print("bounding_box: %d", bounding_box)
     return (scale, shift, bounding_box)
 
 
