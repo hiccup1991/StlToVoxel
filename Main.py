@@ -121,7 +121,7 @@ class MainWindow:
         self.entLayerThickness.configure(justify=RIGHT)
 
         self.frmConvert = LabelFrame(top)
-        self.frmConvert.place(relx=0.02, rely=0.41, relheight=0.08 , relwidth=0.25)
+        self.frmConvert.place(relx=0.02, rely=0.39, relheight=0.08 , relwidth=0.25)
         self.frmConvert.configure(relief=RIDGE)
         self.frmConvert.configure(background=self.backgroundColor)
 
@@ -133,37 +133,49 @@ class MainWindow:
         self.btnStlToVoxel.configure(disabledforeground=self.disabledforeground)
 
         self.frmLayerColor = LabelFrame(top)
-        self.frmLayerColor.place(relx=0.02, rely=0.5, relheight=0.13 , relwidth=0.25)
+        self.frmLayerColor.place(relx=0.02, rely=0.48, relheight=0.17 , relwidth=0.25)
         self.frmLayerColor.configure(relief=RIDGE)
         self.frmLayerColor.configure(text='''MODIFY LAYER COLOR''', font='bold')
         self.frmLayerColor.configure(background=self.backgroundColor)
         
+        self.lblColorMethod = Label(self.frmLayerColor)
+        self.lblColorMethod.place(relx=0.05, rely=0.1, relheight=0.25, relwidth=0.45)
+        self.lblColorMethod.configure(text='''METHOD : ''', font='bold')
+        self.lblColorMethod.configure(background=self.backgroundColor)
+
+        self.cboColorMethod = ttk.Combobox(self.frmLayerColor)
+        self.cboColorMethod.place(relx=0.5, rely=0.1, relheight=0.25, relwidth=0.45)
+        self.cboColorMethod['values'] = ('LAYER BY LAYER', 'HALF LAYER')
+        self.cboColorMethod.bind('<<ComboboxSelected>>', self.on_color_method)
+        self.cboColorMethod.current(0)
+        self.cboColorMethod.configure(state=DISABLED)
+
         self.lblEvenColor = Label(self.frmLayerColor)
-        self.lblEvenColor.place(relx=0.05, rely=0.05, relheight=0.3, relwidth=0.45)
+        self.lblEvenColor.place(relx=0.05, rely=0.38, relheight=0.25, relwidth=0.45)
         self.lblEvenColor.configure(text='''EVEN LAYER : ''', font='bold')
         self.lblEvenColor.configure(background=self.backgroundColor)
 
         self.cboEvenColor = ttk.Combobox(self.frmLayerColor)
-        self.cboEvenColor.place(relx=0.5, rely=0.05, relheight=0.3, relwidth=0.45)
+        self.cboEvenColor.place(relx=0.5, rely=0.38, relheight=0.25, relwidth=0.45)
         self.cboEvenColor['values'] = ('RED', 'GREEN', 'BLUE', 'YELLOW', 'NAVY', 'GOLD', 'PURPLE', 'CYAN', 'ORANGE', 'AZURE', 'IVORY', 'SNOW', 'LINEN', 'CORNSILK', 'TOMATO', 'CORAL')
         self.cboEvenColor.bind('<<ComboboxSelected>>', self.on_even_color)
         self.cboEvenColor.current(0)
         self.cboEvenColor.configure(state=DISABLED)
 
         self.lblOddColor = Label(self.frmLayerColor)
-        self.lblOddColor.place(relx=0.05, rely=0.5, relheight=0.3, relwidth=0.45)
+        self.lblOddColor.place(relx=0.05, rely=0.66, relheight=0.25, relwidth=0.45)
         self.lblOddColor.configure(text='''ODD LAYER : ''' , font='bold')
         self.lblOddColor.configure(background=self.backgroundColor)
 
         self.cboOddColor = ttk.Combobox(self.frmLayerColor)
-        self.cboOddColor.place(relx=0.5, rely=0.5, relheight=0.3, relwidth=0.45)
+        self.cboOddColor.place(relx=0.5, rely=0.66, relheight=0.25, relwidth=0.45)
         self.cboOddColor['values'] = ('RED', 'GREEN', 'BLUE', 'YELLOW', 'NAVY', 'GOLD', 'PURPLE', 'CYAN', 'ORANGE', 'AZURE', 'IVORY', 'SNOW', 'LINEN', 'CORNSILK', 'TOMATO', 'CORAL')
         self.cboOddColor.bind('<<ComboboxSelected>>', self.on_odd_color)
         self.cboOddColor.current(0)
         self.cboOddColor.configure(state=DISABLED)
 
         self.frmModify = LabelFrame(top)
-        self.frmModify.place(relx=0.02, rely=0.65, relheight=0.13 , relwidth=0.25)
+        self.frmModify.place(relx=0.02, rely=0.66, relheight=0.13 , relwidth=0.25)
         self.frmModify.configure(relief=RIDGE)
         self.frmModify.configure(text='''MODIFY CHANGES''', font='bold')
         self.frmModify.configure(background=self.backgroundColor)
@@ -248,11 +260,13 @@ class MainWindow:
             if(len(filenames) == 1):
                 self.cboEvenColor.configure(state=NORMAL)
                 self.cboOddColor.configure(state=NORMAL)
+                self.cboColorMethod.configure(state=NORMAL)
                 self.cboPartList.configure(state=DISABLED)
                 self.cboPartColor.configure(state=DISABLED)
             else:
                 self.cboEvenColor.configure(state=DISABLED)
                 self.cboOddColor.configure(state=DISABLED)
+                self.cboColorMethod.configure(state=DISABLED)
                 self.cboPartList.configure(state=NORMAL)
                 self.cboPartColor.configure(state=NORMAL)
 
@@ -328,17 +342,30 @@ class MainWindow:
                         if (m[t][py][px] == 255):#if m[t][py][px] is white, set color.
                             partCount = len(self.cboPartList['value'])
                             if (partCount == 1):
-                                g[py][px]=g[py][px] + 2#this is not used.
-                                if(colors[j][py][px] == '#00000000'):#if colors is black color , set color.
-                                    if (j % 2 == 0):
-                                        colors[j][py][px] = self.cboEvenColor.get().lower()
-                                    else:
-                                        colors[j][py][px] = self.cboOddColor.get().lower()
-                                    k[j][py][px]=int(2)#set k with 2.
-                                else:#if the color was already set, set white color.
-                                    colors[j][py][px] = 'white'
-                                    k[j][py][px]=int(0)
-                                counter=counter+1#set k with 0                                
+                                if (self.cboColorMethod.current() == 0):
+                                    g[py][px]=g[py][px] + 2#this is not used.
+                                    if(colors[j][py][px] == '#00000000'):#if colors is black color , set color.
+                                        if (j % 2 == 0):
+                                            colors[j][py][px] = self.cboEvenColor.get().lower()
+                                        else:
+                                            colors[j][py][px] = self.cboOddColor.get().lower()
+                                        k[j][py][px]=int(2)#set k with 2.
+                                    else:#if the color was already set, set white color.
+                                        colors[j][py][px] = 'white'
+                                        k[j][py][px]=int(0)
+                                    counter=counter+1#set k with 0        
+                                else:
+                                    g[py][px]=g[py][px] + 2#this is not used.
+                                    if(colors[j][py][px] == '#00000000'):#if colors is black color , set color.
+                                        if (j < count / 2):
+                                            colors[j][py][px] = self.cboEvenColor.get().lower()
+                                        else:
+                                            colors[j][py][px] = self.cboOddColor.get().lower()
+                                        k[j][py][px]=int(2)#set k with 2.
+                                    else:#if the color was already set, set white color.
+                                        colors[j][py][px] = 'white'
+                                        k[j][py][px]=int(0)
+                                    counter=counter+1#set k with 0                          
                             else:
                                 g[py][px]=g[py][px] + 2#this is not used.
                                 if(colors[j][py][px] == '#00000000'):#if colors is black color , set part's color.
@@ -385,6 +412,15 @@ class MainWindow:
         self.partcolor[self.cboPartList.current()] = color
         self.show_model()
 
+    def on_color_method(self, event):
+        if(self.cboColorMethod.current() == 0):
+            self.lblEvenColor['text'] = 'FIRST HALF';
+            self.lblOddColor['text'] = 'SECOND HALF';
+        else:
+            self.lblEvenColor['text'] = 'EVEN LAYER';
+            self.lblOddColor['text'] = 'ODD LAYER';           
+        self.show_model()
+        
     def on_xml(self, event):
         xml_doc = pyconvert.pyconv.convert2XML(self.content)
         # print(xml_doc.toprettyxml())
