@@ -57,6 +57,7 @@ class Position(object):
 class Voxel(object):
     position = Position
     color = str
+    colorname = str
 
 class Dimensions(object):
     width = int
@@ -111,12 +112,12 @@ class MainWindow:
         self.frmLayerThickness = LabelFrame(top)
         self.frmLayerThickness.place(relx=0.02, rely=0.29, relheight=0.1 , relwidth=0.25)
         self.frmLayerThickness.configure(relief=RIDGE)
-        self.frmLayerThickness.configure(text='''SPECIFY LAYER THICKNESS (in inch)''', font='bold')
+        self.frmLayerThickness.configure(text='''SPECIFY RESOLUTION VALUE''', font='bold')
         self.frmLayerThickness.configure(background=self.backgroundColor)
 
         self.entLayerThickness = Entry(self.frmLayerThickness)
         self.entLayerThickness.place(relx=0.05, rely=0.05, relheight=0.75, relwidth=0.9)
-        self.entLayerThickness.insert(0, "0.02")
+        self.entLayerThickness.insert(0, "")
         self.entLayerThickness.configure(background=self.backgroundColor)
         self.entLayerThickness.configure(justify=RIGHT)
 
@@ -245,15 +246,20 @@ class MainWindow:
         # self.ax = self.fig.add_subplot(111, projection='3d')
         self.ax = self.fig.add_subplot((111), aspect='equal', projection='3d')
         self.ax.set_ylabel("Y", fontsize=12)
-        self.ax.set_xlabel("X", fontsize=12)
-        self.ax.set_zlabel("z", fontsize=12)
+        self.ax.set_xlabel("Z", fontsize=12)
+        self.ax.set_zlabel("X", fontsize=12)
 
     def open_directory_dialog(self, event):
         inputdirname = filedialog.askdirectory(initialdir = "./",title = "Select directory")
         if inputdirname:
             self.inputdirname = inputdirname
             print("selected directory: " + inputdirname)
-            filenames = fnmatch.filter(os.listdir(inputdirname), '*.stl')
+            filenames=[]
+            #filenames = fnmatch.filter(os.listdir(inputdirname), '*.stl')
+            
+            for filename in os.listdir(inputdirname):
+                if filename.lower().endswith(('.stl')):
+                    filenames.append(filename)
             filenames.sort()
             self.cboPartList['values'] = filenames
             self.cboPartList.current(0)
@@ -285,7 +291,7 @@ class MainWindow:
             outputfilename = outputdirectoryname + "/" + only_name + ".png"
             print("outputfilename: " + outputfilename)
             layerthickness = float(self.entLayerThickness.get())
-            resolution = int(1.0/layerthickness)
+            resolution = int(layerthickness)
             convert.doExport(self.inputdirname + "/" + filename, outputfilename, resolution)
         self.show_model()
 
@@ -295,6 +301,7 @@ class MainWindow:
         dirpath = self.inputdirname + "/" + os.path.splitext(self.cboPartList.get())[0]
         count=len(fnmatch.filter(os.listdir(dirpath), '*.png'))
         counter=0
+        boudingcounter=0
         filepaths = []
         for part in self.cboPartList['value']:
             dirpath = self.inputdirname + "/" + os.path.splitext(part)[0]
@@ -352,8 +359,7 @@ class MainWindow:
                                         k[j][py][px]=int(2)#set k with 2.
                                     else:#if the color was already set, set white color.
                                         colors[j][py][px] = 'white'
-                                        k[j][py][px]=int(0)
-                                    counter=counter+1#set k with 0        
+                                        k[j][py][px]=int(0)      
                                 else:
                                     g[py][px]=g[py][px] + 2#this is not used.
                                     if(colors[j][py][px] == '#00000000'):#if colors is black color , set color.
@@ -364,8 +370,7 @@ class MainWindow:
                                         k[j][py][px]=int(2)#set k with 2.
                                     else:#if the color was already set, set white color.
                                         colors[j][py][px] = 'white'
-                                        k[j][py][px]=int(0)
-                                    counter=counter+1#set k with 0                          
+                                        k[j][py][px]=int(0)                                                             
                             else:
                                 g[py][px]=g[py][px] + 2#this is not used.
                                 if(colors[j][py][px] == '#00000000'):#if colors is black color , set part's color.
@@ -374,12 +379,12 @@ class MainWindow:
                                 else:#if the color was already set, set white color.
                                     colors[j][py][px] = 'white'
                                     k[j][py][px]=int(0)
-                                counter=counter+1#set k with 0
                     #this part is for xml. you can ignore.
-                    if(colors[j][py][px] != '#00000000'):
+                    if(colors[j][py][px] != '#00000000' and colors[j][py][px] != 'white'):
                         voxel = Voxel()
                         hexcolor = matplotlib.colors.cnames[colors[j][py][px]].lstrip('#')
                         rgbcolor = str(tuple(int(hexcolor[i:i+2], 16) for i in (0, 2 ,4)))
+                        voxel.colorname = colors[j][py][px]
                         voxel.color = rgbcolor
                         position = Position()
                         position.x = px
@@ -387,13 +392,19 @@ class MainWindow:
                         position.z = j
                         voxel.position = position 
                         self.content.voxel.append(voxel)
-
-        print("Total count of Voxels: %d", count * w * h)
+                        counter=counter+1 
+                    if(colors[j][py][px] == 'white'):
+                        boudingcounter=boudingcounter+1
+        
+        print("Total count of voxels: %d", count * w * h)
         print("Colored count of Voxels: %d", counter)
         filled = np.array(k)#initialize voxel with k. 
         self.ax.voxels(filled,facecolors=colors, edgecolors='gray')#initialize ax with voxel. this is library function.
         layerthickness = float(self.entLayerThickness.get())
-        resolution = int(1.0/layerthickness)
+        resolution = int(layerthickness)
+        self.ax.set_ylabel("Y", fontsize=12)
+        self.ax.set_xlabel("Z", fontsize=12)
+        self.ax.set_zlabel("X", fontsize=12)
         self.ax.set_xlim(0, resolution)
         self.canvas.draw()#draw model with ax.this is library function.
 
@@ -420,7 +431,7 @@ class MainWindow:
             self.lblEvenColor['text'] = 'EVEN LAYER';
             self.lblOddColor['text'] = 'ODD LAYER';           
         self.show_model()
-        
+
     def on_xml(self, event):
         xml_doc = pyconvert.pyconv.convert2XML(self.content)
         # print(xml_doc.toprettyxml())
@@ -443,9 +454,11 @@ class MainWindow:
         self.cboOddColor.configure(state=DISABLED)
         self.cboPartList.configure(state=DISABLED)
         self.cboPartColor.configure(state=DISABLED)
+        self.cboColorMethod.configure(state=DISABLED)
 
 if __name__ == '__main__':
     vp_start_gui()
+
 
 
 
