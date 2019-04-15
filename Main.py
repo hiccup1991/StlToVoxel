@@ -133,8 +133,37 @@ class MainWindow:
         self.btnStlToVoxel.configure(background=self.backgroundColor)
         self.btnStlToVoxel.configure(disabledforeground=self.disabledforeground)
 
+        self.frmModify = LabelFrame(top)
+        self.frmModify.place(relx=0.02, rely=0.48, relheight=0.13 , relwidth=0.25)
+        self.frmModify.configure(relief=RIDGE)
+        self.frmModify.configure(text='''MODIFY CHANGES''', font='bold')
+        self.frmModify.configure(background=self.backgroundColor)
+
+        self.lblPart = Label(self.frmModify)
+        self.lblPart.place(relx=0.05, rely=0.05, relheight=0.3, relwidth=0.45)
+        self.lblPart.configure(text='''PART : ''', font='bold')
+        self.lblPart.configure(background=self.backgroundColor)
+
+        self.cboPartList = ttk.Combobox(self.frmModify)
+        # self.cboPartList['values'] = ('KJ1.stl', 'KJ2.stl', 'KJ3.stl', 'KJ4.stl', 'KJ5.stl')
+        # self.cboPartList.current(0)
+        self.cboPartList.place(relx=0.5, rely=0.05, relheight=0.3, relwidth=0.45)
+        self.cboPartList.configure(background=self.backgroundColor)
+        self.cboPartList.configure(state=DISABLED)
+
+        self.lblPartColor = Label(self.frmModify)
+        self.lblPartColor.place(relx=0.05, rely=0.5, relheight=0.3, relwidth=0.45)
+        self.lblPartColor.configure(text=''' PART COLOR : ''' , font='bold')
+        self.lblPartColor.configure(background=self.backgroundColor)
+
+        self.cboPartColor = ttk.Combobox(self.frmModify)
+        self.cboPartColor.place(relx=0.5, rely=0.5, relheight=0.3, relwidth=0.45)
+        self.cboPartColor['values'] = ('RED', 'GREEN', 'BLUE', 'YELLOW', 'NAVY', 'GOLD', 'PURPLE', 'CYAN', 'ORANGE', 'AZURE', 'IVORY', 'SNOW', 'LINEN', 'CORNSILK', 'TOMATO', 'CORAL')
+        self.cboPartColor.bind('<<ComboboxSelected>>', self.on_part_color)
+        self.cboPartColor.configure(state=DISABLED)
+
         self.frmLayerColor = LabelFrame(top)
-        self.frmLayerColor.place(relx=0.02, rely=0.48, relheight=0.17 , relwidth=0.25)
+        self.frmLayerColor.place(relx=0.02, rely=0.62, relheight=0.17 , relwidth=0.25)
         self.frmLayerColor.configure(relief=RIDGE)
         self.frmLayerColor.configure(text='''MODIFY LAYER COLOR''', font='bold')
         self.frmLayerColor.configure(background=self.backgroundColor)
@@ -174,35 +203,6 @@ class MainWindow:
         self.cboOddColor.bind('<<ComboboxSelected>>', self.on_odd_color)
         self.cboOddColor.current(0)
         self.cboOddColor.configure(state=DISABLED)
-
-        self.frmModify = LabelFrame(top)
-        self.frmModify.place(relx=0.02, rely=0.66, relheight=0.13 , relwidth=0.25)
-        self.frmModify.configure(relief=RIDGE)
-        self.frmModify.configure(text='''MODIFY CHANGES''', font='bold')
-        self.frmModify.configure(background=self.backgroundColor)
-
-        self.lblPart = Label(self.frmModify)
-        self.lblPart.place(relx=0.05, rely=0.05, relheight=0.3, relwidth=0.45)
-        self.lblPart.configure(text='''PART : ''', font='bold')
-        self.lblPart.configure(background=self.backgroundColor)
-
-        self.cboPartList = ttk.Combobox(self.frmModify)
-        # self.cboPartList['values'] = ('KJ1.stl', 'KJ2.stl', 'KJ3.stl', 'KJ4.stl', 'KJ5.stl')
-        # self.cboPartList.current(0)
-        self.cboPartList.place(relx=0.5, rely=0.05, relheight=0.3, relwidth=0.45)
-        self.cboPartList.configure(background=self.backgroundColor)
-        self.cboPartList.configure(state=DISABLED)
-
-        self.lblPartColor = Label(self.frmModify)
-        self.lblPartColor.place(relx=0.05, rely=0.5, relheight=0.3, relwidth=0.45)
-        self.lblPartColor.configure(text=''' PART COLOR : ''' , font='bold')
-        self.lblPartColor.configure(background=self.backgroundColor)
-
-        self.cboPartColor = ttk.Combobox(self.frmModify)
-        self.cboPartColor.place(relx=0.5, rely=0.5, relheight=0.3, relwidth=0.45)
-        self.cboPartColor['values'] = ('RED', 'GREEN', 'BLUE', 'YELLOW', 'NAVY', 'GOLD', 'PURPLE', 'CYAN', 'ORANGE', 'AZURE', 'IVORY', 'SNOW', 'LINEN', 'CORNSILK', 'TOMATO', 'CORAL')
-        self.cboPartColor.bind('<<ComboboxSelected>>', self.on_part_color)
-        self.cboPartColor.configure(state=DISABLED)
 
         self.frmMaterial = LabelFrame(top)
         self.frmMaterial.place(relx=0.02, rely=0.79, relheight=0.08 , relwidth=0.25)
@@ -458,7 +458,3 @@ class MainWindow:
 
 if __name__ == '__main__':
     vp_start_gui()
-
-
-
-
